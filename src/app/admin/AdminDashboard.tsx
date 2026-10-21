@@ -155,7 +155,7 @@ export function AdminDashboard({ filasIniciales, error, modo }: Props) {
 
       {modo === "local" && (
         <p className="panel__nota">
-          Modo desarrollo: los registros se guardan en <code>.data/interesados.json</code>. Configurá Supabase para producción.
+          Modo desarrollo: los registros se guardan en <code>.data/interesados.json</code>. Para producción, conectá la hoja de Google con Apps Script.
         </p>
       )}
       {error && <p className="panel__error">{error}</p>}

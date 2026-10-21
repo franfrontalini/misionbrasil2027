@@ -32,10 +32,10 @@
   --texto-suave: #4a4f5c;
   --fondo: var(--blanco);
 
-  --font-texto: var(--font-barlow), system-ui, sans-serif;
-  --font-titulo: var(--font-noto), var(--font-barlow), system-ui, sans-serif;
-  --font-dato: var(--font-mono), ui-monospace, monospace;
-  --font-cita: var(--font-crimson), Georgia, serif;
+  --font-texto: "Barlow", system-ui, sans-serif;
+  --font-titulo: "Noto Sans", "Barlow", system-ui, sans-serif;
+  --font-dato: "JetBrains Mono", ui-monospace, monospace;
+  --font-cita: "Crimson Pro", Georgia, serif;
 
   --radio-s: 6px;
   --radio-m: 12px;

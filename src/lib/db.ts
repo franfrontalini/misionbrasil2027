@@ -1,12 +1,9 @@
 import "server-only";
-import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { promises as fs } from "fs";
 import path from "path";
 import { randomUUID } from "crypto";
 import type { Estado } from "./config";
 import type { InteresadoInput } from "./validation";
-
-export const TABLA = "interesados_mision_brasil_2027";
 
 export type Interesado = {
   id: string;
@@ -29,22 +26,42 @@ export type ResultadoRegistro = "creado" | "actualizado" | "conflicto";
 
 export class DbNoConfigurada extends Error {}
 
-// ── Supabase (producción) ──────────────────────────────────────────────────────
-// Usa la clave service_role, que solo vive en el servidor. La tabla tiene RLS sin políticas,
-// así que la clave pública (anon) no puede leerla ni escribirla.
+// ── Google Sheets vía Apps Script (producción) ────────────────────────────────
+// El script (apps-script/Code.gs) se publica como aplicación web. Solo este servidor lo llama,
+// con una clave secreta que nunca llega al navegador. La hoja queda compartida únicamente con
+// el equipo organizador.
 
-let cliente: SupabaseClient | null = null;
+function appsScript() {
+  const url = process.env.APPS_SCRIPT_URL;
+  const secret = process.env.APPS_SCRIPT_SECRET;
+  if (!url || !secret) return null;
+  return { url, secret };
+}
 
-function supabase() {
-  const url = process.env.SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !key) return null;
-  cliente ??= createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
-  return cliente;
+async function llamar<T>(accion: string, extra: Record<string, unknown> = {}): Promise<T> {
+  const cfg = appsScript()!;
+  const res = await fetch(cfg.url, {
+    method: "POST",
+    // text/plain evita el preflight y Apps Script lo lee igual desde e.postData.contents.
+    headers: { "Content-Type": "text/plain;charset=utf-8" },
+    body: JSON.stringify({ secret: cfg.secret, accion, ...extra }),
+    redirect: "follow",
+    cache: "no-store",
+    signal: AbortSignal.timeout(20_000),
+  });
+  const texto = await res.text();
+  let json: { ok?: boolean; error?: string } & T;
+  try {
+    json = JSON.parse(texto);
+  } catch {
+    throw new Error(`Apps Script respondió algo que no es JSON (HTTP ${res.status}). ¿Está publicado con acceso "Cualquier persona"?`);
+  }
+  if (!json.ok) throw new Error(`Apps Script: ${json.error ?? "error desconocido"}`);
+  return json;
 }
 
 // ── Archivo local (solo desarrollo) ────────────────────────────────────────────
-// Permite probar la landing sin Supabase. En producción nunca se usa.
+// Permite probar la landing sin la hoja. En producción nunca se usa.
 
 const ARCHIVO_LOCAL = path.join(process.cwd(), ".data", "interesados.json");
 
@@ -66,38 +83,21 @@ async function escribirLocal(filas: Interesado[]) {
 }
 
 function backend() {
-  const sb = supabase();
-  if (sb) return { tipo: "supabase" as const, sb };
-  if (localPermitido()) return { tipo: "local" as const };
-  throw new DbNoConfigurada("Faltan SUPABASE_URL y SUPABASE_SERVICE_ROLE_KEY.");
+  if (appsScript()) return "sheets" as const;
+  if (localPermitido()) return "local" as const;
+  throw new DbNoConfigurada("Faltan APPS_SCRIPT_URL y APPS_SCRIPT_SECRET.");
 }
 
 export function modoBaseDeDatos() {
-  return supabase() ? "supabase" : localPermitido() ? "local" : "sin-configurar";
+  return appsScript() ? "sheets" : localPermitido() ? "local" : "sin-configurar";
 }
 
 // ── Operaciones ────────────────────────────────────────────────────────────────
 
 export async function registrarInteresado(d: InteresadoInput): Promise<ResultadoRegistro> {
-  const b = backend();
-
-  if (b.tipo === "supabase") {
-    const args = {
-      p_nombre: d.nombre,
-      p_apellido: d.apellido,
-      p_email: d.email,
-      p_legajo: d.legajo,
-      p_telefono: d.telefono,
-      p_carrera: d.carrera,
-      p_anio_cursada: d.anio_cursada,
-      p_interes_beca: d.interes_beca,
-    };
-    for (let intento = 0; intento < 2; intento++) {
-      const { data, error } = await b.sb.rpc("registrar_interesado", args);
-      if (error) throw error;
-      if (data !== "reintentar") return data as ResultadoRegistro;
-    }
-    return "actualizado";
+  if (backend() === "sheets") {
+    const r = await llamar<{ resultado: ResultadoRegistro }>("registrar", { datos: d });
+    return r.resultado;
   }
 
   const filas = await leerLocal();
@@ -125,43 +125,26 @@ export async function registrarInteresado(d: InteresadoInput): Promise<Resultado
 }
 
 export async function listarInteresados(): Promise<Interesado[]> {
-  const b = backend();
-  if (b.tipo === "supabase") {
-    const filas: Interesado[] = [];
-    const lote = 1000;
-    for (let desde = 0; ; desde += lote) {
-      const { data, error } = await b.sb
-        .from(TABLA)
-        .select("*")
-        .order("fecha_registro", { ascending: false })
-        .range(desde, desde + lote - 1);
-      if (error) throw error;
-      filas.push(...(data as Interesado[]));
-      if (!data || data.length < lote) break;
-    }
-    return filas;
-  }
-  const filas = await leerLocal();
+  const filas =
+    backend() === "sheets" ? (await llamar<{ filas: Interesado[] }>("listar")).filas : await leerLocal();
   return filas.sort((a, b) => b.fecha_registro.localeCompare(a.fecha_registro));
 }
 
 export async function actualizarEstado(id: string, estado: Estado) {
-  const b = backend();
-  const ahora = new Date().toISOString();
-  if (b.tipo === "supabase") {
-    const { data, error } = await b.sb
-      .from(TABLA)
-      .update({ estado, fecha_actualizacion: ahora })
-      .eq("id", id)
-      .select("id");
-    if (error) throw error;
-    return (data?.length ?? 0) > 0;
+  if (backend() === "sheets") {
+    try {
+      await llamar("actualizarEstado", { id, estado });
+      return true;
+    } catch (e) {
+      if (e instanceof Error && e.message.includes("no_encontrado")) return false;
+      throw e;
+    }
   }
   const filas = await leerLocal();
   const fila = filas.find((f) => f.id === id);
   if (!fila) return false;
   fila.estado = estado;
-  fila.fecha_actualizacion = ahora;
+  fila.fecha_actualizacion = new Date().toISOString();
   await escribirLocal(filas);
   return true;
 }

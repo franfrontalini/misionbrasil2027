@@ -17,7 +17,7 @@ export default async function AdminPage() {
     filas = await listarInteresados();
   } catch (e) {
     console.error("[admin] error al listar", e);
-    error = "No se pudo leer la base de datos. Revisá la configuración de Supabase.";
+    error = "No se pudo leer la hoja de Google. Revisá APPS_SCRIPT_URL, APPS_SCRIPT_SECRET y que el script esté publicado.";
   }
 
   return <AdminDashboard filasIniciales={filas} error={error} modo={modoBaseDeDatos()} />;

@@ -10,7 +10,10 @@
     "og": "curl -sf http://localhost:3000/og -o /tmp/og-brasil-2027.png && sips -s format jpeg -s formatOptions 82 /tmp/og-brasil-2027.png --out public/og-brasil-2027.jpg >/dev/null && echo 'public/og-brasil-2027.jpg actualizado'"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.45.4",
+    "@fontsource/barlow": "5.1.0",
+    "@fontsource/crimson-pro": "5.1.0",
+    "@fontsource/jetbrains-mono": "5.1.1",
+    "@fontsource/noto-sans": "5.1.0",
     "next": "15.5.4",
     "react": "19.1.0",
     "react-dom": "19.1.0",

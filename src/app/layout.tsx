@@ -1,13 +1,21 @@
 import type { Metadata, Viewport } from "next";
-import { Barlow, Noto_Sans, JetBrains_Mono, Crimson_Pro } from "next/font/google";
 import { siteConfig } from "@/lib/config";
-import "./globals.css";
 
-// Tipografías del Manual de Identidad Visual UTN FRC.
-const barlow = Barlow({ variable: "--font-barlow", subsets: ["latin"], weight: ["400", "500", "600", "700"] });
-const noto = Noto_Sans({ variable: "--font-noto", subsets: ["latin"], weight: ["500", "700", "800", "900"] });
-const mono = JetBrains_Mono({ variable: "--font-mono", subsets: ["latin"], weight: ["400", "600"] });
-const crimson = Crimson_Pro({ variable: "--font-crimson", subsets: ["latin"], weight: ["400"], style: ["italic"] });
+// Tipografías del Manual de Identidad Visual UTN FRC, servidas desde el propio proyecto
+// (sin descargas a Google Fonts durante el build). Solo el subconjunto latino: alcanza para
+// español y portugués.
+import "@fontsource/barlow/latin-400.css";
+import "@fontsource/barlow/latin-500.css";
+import "@fontsource/barlow/latin-600.css";
+import "@fontsource/barlow/latin-700.css";
+import "@fontsource/noto-sans/latin-500.css";
+import "@fontsource/noto-sans/latin-700.css";
+import "@fontsource/noto-sans/latin-800.css";
+import "@fontsource/noto-sans/latin-900.css";
+import "@fontsource/jetbrains-mono/latin-400.css";
+import "@fontsource/jetbrains-mono/latin-600.css";
+import "@fontsource/crimson-pro/latin-400-italic.css";
+import "./globals.css";
 
 const descripcion =
   "10 días en São Paulo y Río de Janeiro para conocer industrias, universidades y tecnología. Convocatoria de interesados abierta para estudiantes de Ingeniería Industrial y Mecánica de UTN Córdoba.";
@@ -41,7 +49,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="es-AR" className={`${barlow.variable} ${noto.variable} ${mono.variable} ${crimson.variable}`}>
+    <html lang="es-AR">
       <body>{children}</body>
     </html>
   );

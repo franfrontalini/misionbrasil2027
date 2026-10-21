@@ -55,8 +55,8 @@ export default function Privacidad() {
         <h2>Quién accede</h2>
         <p>
           Solo el equipo organizador autorizado de la Misión, mediante un panel protegido con contraseña. La información sobre
-          becas es confidencial y nunca se publica. No vendemos ni cedemos tus datos a terceros. Los datos se alojan en un
-          proveedor de base de datos en la nube que actúa como encargado del tratamiento.
+          becas es confidencial y nunca se publica. No vendemos ni cedemos tus datos a terceros. Los datos se guardan en una
+          planilla de Google Workspace compartida solo con el equipo organizador; Google actúa como proveedor del servicio.
         </p>
 
         <h2>Cuánto tiempo los conservamos</h2>
