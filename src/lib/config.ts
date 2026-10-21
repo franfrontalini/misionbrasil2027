@@ -1,3 +1,21 @@
+// URL pública: tolera la variable vacía o sin "https://" y, si falta, usa el dominio que asigna
+// Vercel. Una URL inválida acá rompe el build (metadataBase).
+function urlDelSitio() {
+  const candidata =
+    process.env.NEXT_PUBLIC_SITE_URL?.trim() ||
+    process.env.VERCEL_PROJECT_PRODUCTION_URL ||
+    process.env.VERCEL_URL ||
+    "localhost:3000";
+  const conProtocolo = /^https?:\/\//.test(candidata)
+    ? candidata
+    : `${candidata.startsWith("localhost") ? "http" : "https"}://${candidata}`;
+  try {
+    return new URL(conProtocolo).origin;
+  } catch {
+    return "http://localhost:3000";
+  }
+}
+
 // Datos editables de la landing. Lo que todavía no está definido queda en null
 // y la interfaz lo oculta o muestra un aviso, en lugar de inventar información.
 
@@ -5,7 +23,7 @@ export const siteConfig = {
   nombre: "Misión Académica Brasil 2027",
   institucion: "UTN Facultad Regional Córdoba",
   carreras: "Ingeniería Industrial e Ingeniería Mecánica",
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
+  url: urlDelSitio(),
 
   // Correo de contacto del equipo organizador (configurable por variable de entorno).
   contactoEmail: process.env.NEXT_PUBLIC_CONTACT_EMAIL || null,
