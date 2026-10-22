@@ -1,30 +1,30 @@
 import Image from "next/image";
 import { siteConfig } from "@/lib/config";
 
-const textos = {
-  utnFrc: "Logo UTN FRC",
-  misiones: "Logo Misiones Académicas",
-};
+const { logos } = siteConfig;
 
-// Espacio reservado para los logos oficiales. No se dibuja ningún logo propio:
-// cuando se carga el archivo en siteConfig.logos, se muestra la imagen oficial.
-export function LogoSlot({ tipo, variante = "footer" }: { tipo: keyof typeof textos; variante?: "header" | "footer" }) {
-  const src = siteConfig.logos[tipo];
-  if (src) {
-    return (
-      <Image
-        src={src}
-        alt={tipo === "utnFrc" ? "UTN Facultad Regional Córdoba" : "Programa de Misiones Académicas"}
-        width={variante === "header" ? 120 : 180}
-        height={variante === "header" ? 36 : 54}
-        className={`logo logo--${variante}`}
-      />
-    );
+// Isologotipo UTN FRC, versión reducida, para el header. Se muestran las dos variantes de color
+// y el CSS elige: blanco sobre la foto del hero, azul cuando el header se vuelve blanco.
+export function LogoHeader() {
+  return (
+    <span className="logo-header">
+      <Image src={logos.utnFrcReducidoBlanco} alt="UTN Facultad Regional Córdoba" width={1633} height={999} className="logo-header__blanco" priority />
+      <Image src={logos.utnFrcReducidoAzul} alt="" aria-hidden width={1633} height={999} className="logo-header__azul" priority />
+    </span>
+  );
+}
+
+// Logos del footer: isologotipo extendido en blanco y espacio para el del programa.
+export function LogoSlot({ tipo }: { tipo: "utnFrc" | "misiones" }) {
+  if (tipo === "utnFrc") {
+    return <Image src={logos.utnFrcBlanco} alt="UTN Facultad Regional Córdoba" width={2000} height={676} className="logo-footer" />;
   }
-  if (variante === "header") return null;
+  if (logos.misiones) {
+    return <Image src={logos.misiones} alt="Programa de Misiones Académicas" width={360} height={120} className="logo-footer" />;
+  }
   return (
     <span className="logo-slot" aria-hidden="true">
-      {textos[tipo]}
+      Logo Misiones Académicas
     </span>
   );
 }

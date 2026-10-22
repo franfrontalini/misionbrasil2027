@@ -34,11 +34,13 @@ export const siteConfig = {
   // Fecha hasta la que se conservan los datos. Revisar con el área legal antes de publicar.
   conservacionHasta: process.env.NEXT_PUBLIC_CONSERVACION_HASTA || "el 31 de diciembre de 2027",
 
-  // Logos oficiales: copiar los archivos a /public/logos y completar la ruta. Mientras sea null,
+  // Logos oficiales (archivos provistos por UTN FRC en /public/logos). Si un logo es null,
   // se muestra un espacio reservado.
   logos: {
-    utnFrc: null as string | null, // p. ej. "/logos/utn-frc-blanco.svg"
-    misiones: null as string | null, // p. ej. "/logos/misiones-academicas.svg"
+    utnFrcReducidoBlanco: "/logos/utn-frc-reducido-blanco.png",
+    utnFrcReducidoAzul: "/logos/utn-frc-reducido-azul.png",
+    utnFrcBlanco: "/logos/utn-frc-blanco.png",
+    misiones: null as string | null, // p. ej. "/logos/misiones-academicas.png"
   },
 };
 

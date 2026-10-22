@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { IconCerrar, IconMenu } from "./Icons";
-import { LogoSlot } from "./LogoSlot";
+import { LogoHeader } from "./LogoSlot";
 
 const enlaces = [
   { href: "#mision", label: "La misión" },
@@ -38,7 +38,8 @@ export function Header() {
     <header className={`header ${solido || abierto ? "header--solido" : ""}`}>
       <div className="header__inner contenedor">
         <a href="#inicio" className="header__marca" aria-label="Brasil 2027, ir al inicio">
-          <LogoSlot tipo="utnFrc" variante="header" />
+          <LogoHeader />
+          <span className="header__separador" aria-hidden="true" />
           <span className="header__nombre">
             <span className="mono">Misión Académica</span>
             <strong>Brasil 2027</strong>

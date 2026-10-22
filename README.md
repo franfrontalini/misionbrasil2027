@@ -16,7 +16,7 @@ Sigue el *Manual de Identidad Visual UTN FRC* (versión reducida, mayo 2026). Lo
 - **Complementarios:** Verde Vital `#6FA958`, Naranja Energía `#FF8E2C` y Magenta Visión `#D830A0`. Se usan para dar dinamismo (dígitos del título, íconos, números, etiquetas de estado). Cuando se usan como texto sobre blanco, se oscurecen para cumplir el contraste mínimo de 4.5:1.
 - **Tipografías:** Barlow (textos), Noto Sans (títulos), JetBrains Mono (datos) y Crimson Pro (citas). Se sirven desde el propio proyecto (paquetes `@fontsource`), así el build no depende de Google Fonts.
 - **Lettering “BRASIL 2027”** (`src/lib/lettering.ts`): diseñado para este viaje, con letras de un único trazo sobre la retícula de 6 módulos del isologotipo. Las curvas son los semicírculos del escudo; la línea de la segunda fila remata en su signo “más”. Se dibuja trazo por trazo al cargar la página.
-- **Logos oficiales:** no se dibuja ningún logo. Copiá los archivos a `public/logos/` y completá las rutas en `siteConfig.logos` (`src/lib/config.ts`). Mientras tanto se muestran espacios reservados en el footer.
+- **Logos oficiales:** los archivos de UTN FRC están en `public/logos/`. El header usa la versión reducida (blanca sobre la foto, azul al bajar) y el footer la extendida en blanco. El logo de Misiones Académicas se agrega en `siteConfig.logos.misiones` (`src/lib/config.ts`); mientras tanto se muestra un espacio reservado.
 
 ## Puesta en marcha local
 
@@ -127,7 +127,7 @@ npm run og
 
 ## Contenido pendiente de completar
 
-- Logos oficiales de UTN FRC y del programa de Misiones Académicas.
+- Logo del programa de Misiones Académicas (los de UTN FRC ya están en `public/logos/`).
 - Correo de contacto y responsable del tratamiento de datos.
 - Plazo de conservación de los datos, a confirmar con el área legal.
 - Fotografías: hoy se usan fotos de Unsplash (licencia libre). Se pueden reemplazar por fotos propias en `public/img/` con el mismo nombre de archivo.

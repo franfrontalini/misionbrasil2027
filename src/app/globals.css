@@ -437,9 +437,44 @@ ul {
   }
 }
 
-.logo--header {
-  height: 36px;
-  width: auto;
+.logo-header {
+  position: relative;
+  display: block;
+  height: 34px;
+  aspect-ratio: 1633 / 999;
+  flex: none;
+}
+.logo-header img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transition: opacity 0.3s;
+}
+.logo-header__azul {
+  opacity: 0;
+}
+.header--solido .logo-header__azul {
+  opacity: 1;
+}
+.header--solido .logo-header__blanco {
+  opacity: 0;
+}
+.header__separador {
+  width: 1px;
+  height: 30px;
+  background: currentColor;
+  opacity: 0.35;
+}
+@media (min-width: 720px) {
+  .logo-header {
+    height: 40px;
+  }
+}
+
+.logo-footer {
+  width: 220px;
+  height: auto;
 }
 
 /* ─── 1 · Hero ────────────────────────────────────────────────────────────── */
@@ -1342,7 +1377,7 @@ ul {
   font-size: 15px;
   color: var(--azul-oscuro);
 }
-.campo input,
+.campo input:not([type="checkbox"]):not([type="radio"]),
 .campo select {
   width: 100%;
   min-height: 50px;
@@ -1365,19 +1400,23 @@ ul {
 .campo select:invalid {
   color: #6b7080;
 }
-.campo input:hover,
+.campo input:not([type="checkbox"]):not([type="radio"]):hover,
 .campo select:hover {
   border-color: var(--azul);
 }
-.campo input:focus,
+.campo input:not([type="checkbox"]):not([type="radio"]):focus,
 .campo select:focus {
   outline: none;
   border-color: var(--azul);
   box-shadow: 0 0 0 4px rgb(64 197 242 / 35%);
 }
-.campo [aria-invalid="true"] {
+.campo [aria-invalid="true"]:not([type="checkbox"]) {
   border-color: #c4262e;
   background: #fff7f7;
+}
+.check input[aria-invalid="true"] {
+  outline: 2px solid #c4262e;
+  outline-offset: 2px;
 }
 .campo__error {
   margin: 0;
